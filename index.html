@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PORTAL APLIKASI | Premium Loading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3a7bd5;
+            --secondary: #00d2ff;
+            --accent: #69b6ff;
+            --dark: #0f3460;
+            --darker: #16213e;
+            --darkest: #1a1a2e;
+            --gold: #FFD700;
+            --gold-light: rgba(255, 215, 0, 0.7);
+            --gold-glow: rgba(255, 215, 0, 0.5);
+            --platinum: #e5e4e2;
+            --diamond: #b9f2ff;
+            --lightning: #00f2ff;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --info: #2196F3;
+            --barjas: #2196F3;
+            --sismat: #4CAF50;
+            --help: #FF9800;
+            --button-radius: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--darkest) 0%, var(--darker) 50%, var(--dark) 100%);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            opacity: 0;
+            animation: bodyFadeIn 1.5s ease-out forwards;
+            touch-action: manipulation;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Particle Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.5s forwards;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+        }
+
+        .gold-particle {
+            background: var(--gold-light);
+            filter: blur(0.8px);
+            box-shadow: 0 0 8px var(--gold-glow);
+            animation-name: float-gold;
+        }
+
+        .blue-particle {
+            background: var(--accent);
+            filter: blur(0.5px);
+            box-shadow: 0 0 8px rgba(105, 182, 255, 0.5);
+            animation-name: float-blue;
+        }
+
+        /* Main Container */
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Loading Container */
+        .loading-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: containerFadeIn 1.2s ease-out 0.3s forwards;
+        }
+
+        /* Portal Container */
+        .portal-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .portal-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Logo Animation */
+        .logo-container {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(100, 149, 237, 0.7));
+            animation: 
+                fadeIn 1.5s ease-out forwards,
+                subtlePulse 4s ease-in-out infinite;
+            opacity: 0;
+            border-radius: 20px;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            padding: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at center,
+                rgba(255, 215, 0, 0.3) 0%,
+                rgba(185, 242, 255, 0.2) 40%,
+                transparent 70%
+            );
+            animation: pulseGlow 3s infinite ease-in-out;
+            z-index: -1;
+        }
+
+        /* Text Animation */
+        .text-animation {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--diamond), var(--accent), var(--gold));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 3s linear infinite;
+            text-shadow: 0 0 10px rgba(105, 182, 255, 0.3);
+            text-align: center;
+        }
+
+        .portal-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--diamond), var(--accent), var(--gold));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 3s linear infinite;
+            text-shadow: 0 0 15px rgba(105, 182, 255, 0.5);
+            text-align: center;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 90%;
+            max-width: 400px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border-radius: 3px;
+            transition: width 0.4s ease;
+            position: relative;
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 400px;
+            margin-bottom: 10px;
+        }
+
+        .percentage {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+
+        .loading-time {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+        }
+
+        /* Loading Dots */
+        .loading-animation {
+            display: flex;
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .loading-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--diamond));
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: 0s; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        .loading-dot:nth-child(4) { animation-delay: 0.6s; }
+
+        /* Loading Message */
+        .loading-message {
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            line-height: 1.6;
+            animation: fade 3s infinite ease-in-out;
+        }
+
+        /* Enhanced Button Styles */
+        .portal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px 0;
+        }
+
+        .portal-button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 22px 25px;
+            background: linear-gradient(145deg, rgba(15, 52, 96, 0.9), rgba(26, 26, 46, 0.95));
+            border: none;
+            border-radius: var(--button-radius);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        .portal-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            clip-path: polygon(0 0, 100% 0, 100% 20%, 0 50%);
+            z-index: -1;
+            transition: all 0.5s ease;
+        }
+
+        .portal-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.6s;
+            z-index: -1;
+        }
+
+        .portal-button:hover {
+            transform: translateY(-7px);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .portal-button:hover::after {
+            left: 100%;
+        }
+
+        .portal-button:hover::before {
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 100%);
+        }
+
+        .portal-button:active {
+            transform: translateY(-3px);
+            transition: transform 0.1s;
+        }
+
+        .button-icon {
+            margin-right: 15px;
+            font-size: 1.6rem;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-text {
+            flex: 1;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .button-description {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        .button-arrow {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.1);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .portal-button:hover .button-arrow {
+            transform: translateX(5px);
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .portal-button:hover .button-icon {
+            transform: scale(1.15) rotate(5deg);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .portal-button:hover .button-text {
+            letter-spacing: 0.3px;
+        }
+
+        /* Specific button styles */
+        .barjas-button {
+            --button-color: var(--barjas);
+            background: linear-gradient(145deg, rgba(15, 52, 96, 0.9), rgba(26, 26, 46, 0.95));
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 15px rgba(33, 150, 243, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .barjas-button:hover {
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                0 0 25px rgba(33, 150, 243, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .barjas-button .button-icon {
+            color: var(--barjas);
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(33, 150, 243, 0.1));
+        }
+
+        .sismat-button {
+            --button-color: var(--sismat);
+            background: linear-gradient(145deg, rgba(15, 52, 96, 0.9), rgba(26, 26, 46, 0.95));
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 15px rgba(76, 175, 80, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .sismat-button:hover {
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                0 0 25px rgba(76, 175, 80, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .sismat-button .button-icon {
+            color: var(--sismat);
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+        }
+
+        .help-button {
+            --button-color: var(--help);
+            background: linear-gradient(145deg, rgba(15, 52, 96, 0.9), rgba(26, 26, 46, 0.95));
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 15px rgba(255, 152, 0, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .help-button:hover {
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                0 0 25px rgba(255, 152, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .help-button .button-icon {
+            color: var(--help);
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.2), rgba(255, 152, 0, 0.1));
+        }
+
+        /* Button badges */
+        .button-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, var(--button-color), var(--secondary));
+            color: white;
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+            z-index: 2;
+        }
+
+        /* Copyright */
+        .copyright {
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.7rem;
+            width: 100%;
+            text-align: center;
+            padding: 0 15px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes bodyFadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes containerFadeIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes float-gold {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(20px, 20px) scale(1.1); opacity: 0.8; }
+        }
+
+        @keyframes float-blue {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(-15px, 15px) scale(1.1); opacity: 0.7; }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.6; }
+            50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.9; }
+        }
+
+        @keyframes fade {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to { 
+                opacity: 0; 
+                transform: scale(0.95);
+            }
+        }
+
+        /* Desktop Enhancements */
+        @media (min-width: 768px) {
+            .logo {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .logo-glow {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .text-animation, .portal-title {
+                font-size: 2.5rem;
+            }
+            
+            .progress-container {
+                height: 8px;
+            }
+            
+            .loading-dot {
+                width: 12px;
+                height: 12px;
+            }
+
+            .portal-buttons {
+                gap: 25px;
+            }
+
+            .portal-button {
+                padding: 25px 30px;
+                font-size: 1.1rem;
+            }
+
+            .button-icon {
+                font-size: 1.8rem;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .button-badge {
+                font-size: 0.7rem;
+                padding: 5px 12px;
+            }
+
+            .button-description {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 480px) {
+            .particle {
+                animation-duration: 20s !important;
+            }
+            
+            .loading-dot {
+                animation-duration: 2s !important;
+            }
+
+            .portal-title {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+
+            .portal-button {
+                padding: 18px 20px;
+                font-size: 0.9rem;
+            }
+
+            .button-icon {
+                font-size: 1.4rem;
+                margin-right: 12px;
+                width: 30px;
+                height: 30px;
+            }
+            
+            .button-badge {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+
+            .button-description {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div class="particles" id="particles"></div>
+    
+    <div class="main-container">
+        <!-- Loading Container -->
+        <div class="loading-container" id="loading-container">
+            <div class="logo-container">
+                <div class="logo-glow"></div>
+                <img src="https://raw.githubusercontent.com/disnakkansitubondo-web/loading/refs/heads/main/logo-barjas.png" alt="APLIKASI BARJAS Logo" class="logo">
+            </div>
+            
+            <h1 class="text-animation">PORTAL SISTEM</h1>
+            
+            <div class="loading-content">
+                <div class="progress-info">
+                    <span class="loading-time" id="loading-time">Initializing system...</span>
+                    <span class="percentage" id="percentage">0%</span>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                
+                <div class="loading-animation">
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                    <div class="loading-dot"></div>
+                </div>
+                
+                <div class="loading-message">
+                    PREMIUM PLATFORM LOADING<br>
+                    PREPARING YOUR EXCLUSIVE EXPERIENCE
+                </div>
+            </div>
+            
+            <div class="copyright">
+                © 2025 CENDHANU™ | All Rights Reserved<br>
+                A Premium Digital Solution by Lenter Karya Situbondo
+            </div>
+        </div>
+
+        <!-- Portal Container -->
+        <div class="portal-container" id="portal-container">
+            <div class="logo-container">
+                <div class="logo-glow"></div>
+                <img src="https://raw.githubusercontent.com/pergunu/ujian-online/main/assets/images/logo.png" alt="APLIKASI BARJAS Logo" class="logo">
+            </div>
+            
+            <h1 class="portal-title">PORTAL APLIKASI</h1>
+            
+            <div class="portal-buttons">
+                <a href="https://pergunu.github.io/ujian-online/" class="portal-button barjas-button">
+                    <div class="button-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="button-text">
+                        Aplikasi Ujian Online
+                        <span class="button-description">Sistem ujian online terintegrasi</span>
+                    </div>
+                    <div class="button-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="button-badge">POPULAR</div>
+                </a>
+                
+                <a href="https://disnakkansitubondo-web.github.io/sismat/" class="portal-button sismat-button">
+                    <div class="button-icon"><i class="fas fa-database"></i></div>
+                    <div class="button-text">
+                        Aplikasi SISMAT
+                        <span class="button-description">Sistem manajemen terpadu</span>
+                    </div>
+                    <div class="button-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="button-badge">NEW</div>
+                </a>
+                
+                <a href="https://wa.me/6285647709114?text=Haaaii Admin,%20saya%20meminta%20bantuan%20informasi%20detail%20terkait%20penggunaan%20portal%20sistem" class="portal-button help-button">
+                    <div class="button-icon"><i class="fas fa-headset"></i></div>
+                    <div class="button-text">
+                        Pusat Bantuan
+                        <span class="button-description">Dukungan informasi untuk pengguna</span>
+                    </div>
+                    <div class="button-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="button-badge">24/7</div>
+                </a>
+            </div>
+            
+            <div class="copyright">
+                © 2025 CENDHANU™ | All Rights Reserved<br>
+                A Premium Digital Solution by Lenter Karya Situbondo
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingContainer = document.getElementById('loading-container');
+            const portalContainer = document.getElementById('portal-container');
+            const progressBar = document.getElementById('progress-bar');
+            const percentageElement = document.getElementById('percentage');
+            const loadingTimeElement = document.getElementById('loading-time');
+            const particlesContainer = document.getElementById('particles');
+            
+            // Optimized particle creation
+            function createParticles() {
+                particlesContainer.innerHTML = '';
+                
+                // Adjusted particle count based on device
+                const particleCount = window.innerWidth < 768 ? 40 : 80;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    createParticle('gold', i);
+                    createParticle('blue', i);
+                }
+            }
+            
+            function createParticle(type, index) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle', `${type}-particle`);
+                
+                const size = type === 'gold' ? Math.random() * 4 + 2 : Math.random() * 3 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.top = `${Math.random() * 100}vh`;
+                
+                const duration = (Math.random() * 15 + 10) * (window.innerWidth < 480 ? 1.5 : 1);
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Loading animation with preserved effects
+            function startLoadingAnimation() {
+                const milestones = [
+                    { time: 800, percent: 5, message: "Starting premium systems..." },
+                    { time: 2000, percent: 20, message: "Loading luxury modules..." },
+                    { time: 3500, percent: 35, message: "Initializing secure database..." },
+                    { time: 5000, percent: 50, message: "Halfway there..." },
+                    { time: 6500, percent: 65, message: "Optimizing performance..." },
+                    { time: 8000, percent: 80, message: "Finalizing components..." },
+                    { time: 9500, percent: 95, message: "Almost ready..." },
+                    { time: 10000, percent: 100, message: "Ready to launch..." }
+                ];
+                
+                const startTime = Date.now();
+                const totalDuration = 11000; // 11 seconds total
+                
+                function update() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / totalDuration, 1);
+                    
+                    // Find current milestone
+                    let currentMilestone = milestones[milestones.length - 1];
+                    for (const milestone of milestones) {
+                        if (elapsed >= milestone.time) {
+                            currentMilestone = milestone;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    // Update UI
+                    progressBar.style.width = `${currentMilestone.percent}%`;
+                    percentageElement.textContent = `${currentMilestone.percent}%`;
+                    loadingTimeElement.textContent = currentMilestone.message;
+                    
+                    // Enhanced effects at different percentages
+                    if (currentMilestone.percent > 50) {
+                        progressBar.style.boxShadow = `0 0 10px rgba(0, 210, 255, 0.6)`;
+                    }
+                    if (currentMilestone.percent > 80) {
+                        progressBar.style.boxShadow = `0 0 15px rgba(255, 215, 0, 0.7)`;
+                    }
+                    
+                    // Handle completion
+                    if (currentMilestone.percent === 100) {
+                        if (elapsed >= totalDuration - 800) {
+                            loadingContainer.classList.add('fade-out');
+                            setTimeout(() => {
+                                loadingContainer.style.display = 'none';
+                                portalContainer.classList.add('active');
+                            }, 800);
+                        } else {
+                            const remaining = (totalDuration - elapsed) / 1000;
+                            loadingTimeElement.textContent = `Launching in ${remaining.toFixed(1)}s...`;
+                        }
+                    }
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+                
+                update();
+            }
+            
+            // Preload logo image
+            const logoImage = new Image();
+            logoImage.src = 'https://raw.githubusercontent.com/disnakkansitubondo-web/loading/refs/heads/main/logo-barjas.png';
+            logoImage.onload = () => {
+                createParticles();
+                setTimeout(startLoadingAnimation, 300);
+            };
+            
+            // Handle resize with debounce
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    createParticles();
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>
